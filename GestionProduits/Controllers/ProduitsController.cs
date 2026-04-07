@@ -7,6 +7,7 @@ namespace GestionProduits.Controllers;
 [ApiController]
 
 [Route("api/[controller]")]
+[Produces("application/json")]// ← dit au client qu'on retourne du JSON
 public class ProduitsController : ControllerBase
 
 {
@@ -36,7 +37,7 @@ public class ProduitsController : ControllerBase
     }
 
     // GET api/produits/1
-    [HttpGet("{id}")]
+    [HttpGet("{id:int:min(1)}")]
     public async Task<ActionResult<ProduitResponseDto>> GetParId(int id)
     {
         try
@@ -60,7 +61,6 @@ public class ProduitsController : ControllerBase
     {
         try
         {
-            // ModelState vérifie automatiquement les [Required], [Range] etc.
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -74,7 +74,7 @@ public class ProduitsController : ControllerBase
         }
     }
 
-  [HttpDelete("{id}")]
+  [HttpDelete("{id:int}")]
     public async Task<ActionResult> Supprimer(int id)
     {
         try
@@ -91,7 +91,7 @@ public class ProduitsController : ControllerBase
             return StatusCode(500, "Une erreur interne est survenue.");
         }
     }
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public async Task<ActionResult<ProduitResponseDto>> Modifier(int id, [FromBody] ProduitRequestDto dto)
     {
         try
@@ -112,3 +112,5 @@ public class ProduitsController : ControllerBase
         }
     }
 }
+
+

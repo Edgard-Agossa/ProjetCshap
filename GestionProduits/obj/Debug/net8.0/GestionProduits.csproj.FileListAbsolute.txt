@@ -132,3 +132,4 @@ C:\Users\edgard.agossa\Documents\projet\ProjetCshap\GestionProduits\obj\Debug\ne
 C:\Users\edgard.agossa\Documents\projet\ProjetCshap\GestionProduits\obj\Debug\net8.0\GestionProduits.pdb
 C:\Users\edgard.agossa\Documents\projet\ProjetCshap\GestionProduits\obj\Debug\net8.0\GestionProduits.genruntimeconfig.cache
 C:\Users\edgard.agossa\Documents\projet\ProjetCshap\GestionProduits\obj\Debug\net8.0\ref\GestionProduits.dll
+C:\Users\edgard.agossa\Documents\projet\ProjetCshap\GestionProduits\obj\Debug\net8.0\GestionProduits.sourcelink.json
