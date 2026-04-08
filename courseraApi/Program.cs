@@ -1,0 +1,51 @@
+var builder = WebApplication.CreateBuilder(args);
+
+// On dit à l'app : "Chaque fois qu'on demande ISmsService, donne OrangeSmsService"
+builder.Services.AddScoped<ISmsService, OrangeSemsService>();
+builder.Services.AddScoped<IMyService, MyService>();
+
+
+// Test 1 : Scoped (L'ID reste le même pour un clic, mais change si tu rafraîchis la page)
+// builder.Services.AddScoped<IMyService, MyService>();
+
+// Test 2 : Transient (L'ID change TOUT LE TEMPS, même au sein d'une seule requête)
+// builder.Services.AddTransient<IMyService, MyService>();
+
+// Test 3 : Singleton (L'ID ne change JAMAIS, même si tu fermes et rouvres ton navigateur)
+// builder.Services.AddSingleton<IMyService, MyService>();
+
+var app = builder.Build();
+
+//on active notre douane personnalisé (middelware)
+
+// 1. D'abord le filet de sécurité global (Erreurs)
+app.UseMiddleware<ErrorHandlingMiddleware>();
+// 2. Ensuite la sécurité (On bloque les intrus immédiatement)
+app.UseMiddleware<SecurityMiddleware>();
+// 3. Enfin le log (On ne logge que ce qui a passé la sécurité)
+app.UseMiddleware<RequestLoggingMiddleware>();
+
+app.UseHttpsRedirection();
+
+app.MapGet("/test-sms", async (ISmsService smsService) =>
+{
+   await smsService.SendTransactionSms("+2290166589049", 5000);
+   return Results.Ok("Le test a été lancé, console !");
+});
+
+app.MapGet("/test-logcreation", async (IMyService myService) =>
+{
+   //On utilise le nom de la variable 'myService'
+   //On retire 'await' car LogCreation est 'void'
+   myService.LogCreation("Moov");
+   return Results.Ok("ok");
+});
+
+app.MapGet("/crash", () =>
+{
+   throw new Exception("Explosion de la base de données !");
+});
+
+
+app.Run();
+

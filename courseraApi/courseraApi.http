@@ -1,0 +1,6 @@
+@courseraApi_HostAddress = http://localhost:5139
+
+GET {{courseraApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
