@@ -1,0 +1,6 @@
+@MediumApi_HostAddress = http://localhost:5163
+
+GET {{MediumApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
