@@ -6,7 +6,7 @@ builder.Services.AddScoped<IMyService, MyService>();
 
 builder.Services.Configure<OrangeOptions>(
 builder.Configuration.GetSection("OrangeConfig")
-);
+); //Configuration pro avec le pattern Options
 
 // Test 1 : Scoped (L'ID reste le même pour un clic, mais change si tu rafraîchis la page)
 // builder.Services.AddScoped<IMyService, MyService>();

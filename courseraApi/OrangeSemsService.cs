@@ -12,7 +12,11 @@ public OrangeSemsService(IMyService myservice)
  public async Task SendTransactionSms(string phoneNumber, decimal amount)
     {
         _myservice.LogCreation($"Préparation de l'envoi pour {phoneNumber}");
-
+List<string> numeros = new List<string> {"5122", "56525", "45556"};
+foreach (string numero in numeros)
+        {
+            Console.WriteLine($"Envoi à {numero}");
+        }
         Console.WriteLine($"[Orange Money] SMS envoyé au {phoneNumber} : Votre paiement de {amount} a été reçu avec succès");
         // Comme c'est une méthode Task, on simule une attente asynchrone (optionnel)
         await Task.CompletedTask;
