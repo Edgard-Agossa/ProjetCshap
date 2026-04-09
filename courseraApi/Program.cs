@@ -1,3 +1,5 @@
+using System.IO.Pipelines;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // On dit à l'app : "Chaque fois qu'on demande ISmsService, donne OrangeSmsService"
@@ -49,6 +51,25 @@ app.MapGet("/crash", () =>
    throw new Exception("Explosion de la base de données !");
 });
 
+
+app.MapPost("/send-bulk-sms", async(ISmsService smsService) =>
+{
+   List<string> phoneList = new List<string> {"+224621000001", "+224621000002", "+224621000003"};
+   // string message = "Alerte Orange : Votre solde est faible.";
+
+   var tasks = new List<Task>();
+
+   foreach (string phone in phoneList)
+   {
+      //on lance les tâches et on les stocke
+      tasks.Add(smsService.SendTransactionSms(phone, 0));//0 car c'est juste un test
+   }
+   // On attend que tout le monde ait fini
+   await Task.WhenAll(tasks);
+
+   return Results.Ok("Tous les SMS ont été transmis au reseau !");
+
+});
 
 app.Run();
 

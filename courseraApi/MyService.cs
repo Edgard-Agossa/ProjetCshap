@@ -10,6 +10,7 @@ public class MyService: IMyService
 
     public void LogCreation(string message)
     {
+        
         Console.WriteLine($"{message} - service ID {_serviceId} ");
     }
 }
