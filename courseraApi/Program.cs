@@ -4,6 +4,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ISmsService, OrangeSemsService>();
 builder.Services.AddScoped<IMyService, MyService>();
 
+builder.Services.Configure<OrangeOptions>(
+builder.Configuration.GetSection("OrangeConfig")
+);
 
 // Test 1 : Scoped (L'ID reste le même pour un clic, mais change si tu rafraîchis la page)
 // builder.Services.AddScoped<IMyService, MyService>();
