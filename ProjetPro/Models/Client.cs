@@ -19,7 +19,7 @@ public string Nom {get; set;} = string.Empty;
 public string ApiKey {get; set; } = Guid.NewGuid().ToString(); //GUID = Identifiant Unique Universel — une chaîne générée aléatoirement, impossible à deviner.
 
 //Solde de message disponibles
-public int SoldeMessage {get; set;} = 0;
+public int SoldeMessages {get; set;} = 0;
 public bool EstActif {get; set;} = true;
 public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
 

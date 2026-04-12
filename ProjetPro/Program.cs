@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using ProjetPro.Data;
 using Microsoft.OpenApi.Models;
-// using ProjetPro.Services.Interfaces;
-// using ProjectPro.Services.Implementations;
+using ProjetPro.Services.Interfaces;
+using ProjetPro.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +26,11 @@ option.UseMySql(
 
 //injection de dépendances
 // builder.Services.AddScoped<IProduitService, ProduitService>();
+
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IClientService, ClientService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

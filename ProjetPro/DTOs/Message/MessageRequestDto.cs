@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using ProjetPro.Models;
-namespace ProjetPro.DTO.Message;
+namespace ProjetPro.DTOs.Message;
 
 public class MessageRequestDto
 {

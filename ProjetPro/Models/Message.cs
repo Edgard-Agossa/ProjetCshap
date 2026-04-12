@@ -40,7 +40,8 @@ public int NombreTentatives {get; set;} = 0;
 //Message d'erreur si échec
 public string? ErreurMessage {get; set;}
 
-
+    public int? ClientId { get; set; }
+    public Client? Client { get; set; }
 }
 
 public enum StatutMessage
