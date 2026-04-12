@@ -34,12 +34,14 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Expediteur).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Destinataire).IsRequired().HasMaxLength(20);
             entity.Property(e => e.Contenu).IsRequired().HasMaxLength(1000);
+             entity.Property(e => e.Statut).HasConversion<string>();
+        entity.Property(e => e.Type).HasConversion<string>();
 
             //statut stoké comme string en base de données(plus lisible)
-            entity.Property(e => e.Statut)
-                  .HasConversion<string>();
-            entity.Property(e => e.Type)
-                  .HasConversion<string>();
+             entity.HasOne(m => m.Client)
+              .WithMany(c => c.Messages)
+              .HasForeignKey(m => m.ClientId) // ← ClientId est la clé étrangère
+              .OnDelete(DeleteBehavior.Cascade);
 
         });
         // Configuration Client
@@ -51,9 +53,9 @@ public class AppDbContext : DbContext
             entity.HasIndex(e => e.ApiKey).IsUnique();
 
             // Relation Client → Messages
-            entity.HasMany(c => c.Messages)
-                  .WithOne()
-                  .OnDelete(DeleteBehavior.Cascade);
+            // entity.HasMany(c => c.Messages)
+            //       .WithOne()
+            //       .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
