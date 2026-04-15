@@ -39,8 +39,10 @@ public class MessageService : IMessageService
     {
         try
         {
+            // EF Core dit : "je garde un œil sur cet objet, si tu le modifies je le sais"
+// → consomme de la mémoire inutilement si tu veux juste LIRE
             var message = await _context.Messages
-                .AsNoTracking()
+                .AsNoTracking()// AVEC AsNoTracking — EF Core charge et oublie
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (message is null) return null;

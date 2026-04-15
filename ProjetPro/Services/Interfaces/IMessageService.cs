@@ -15,4 +15,7 @@ public interface IMessageService
     Task<MessageResponseDto> EnvoyerAsync(int clientId, MessageRequestDto dto);
     // Mettre à jour le statut d'un message (ex: Livré, Échoué)
     Task<MessageResponseDto?> MettreAJourStatutAsync(int id, string statut);
+    Task<MessageMasseResultatDto> EnvoyerEnMasseAsync(
+    int clientId, 
+    MessageMasseRequestDto dto);
 }

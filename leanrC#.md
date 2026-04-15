@@ -256,3 +256,6 @@ Le Contrat (Interface) : On ne parle jamais à une classe directement, on passe 
 L'Enregistrement (Program.cs) : C'est là qu'on décide quel "ouvrier" (classe) va réaliser quel "contrat" (interface) et pour combien de temps (Scoped, Singleton, Transient).
 
 L'Injection par Constructeur : C'est la manière propre et automatique de recevoir ses outils. On ne fait plus jamais de new Classe(), on laisse le système nous "livrer" ce dont on a besoin.
+
+
+## Serializer ![alt text](image.png)

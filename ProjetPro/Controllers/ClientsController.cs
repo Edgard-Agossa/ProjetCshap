@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using ProjetPro.DTOs.Client;
+using ProjetPro.Models;
 using ProjetPro.Services.Interfaces;
 
 namespace ProjetPro.Controllers;
@@ -39,7 +40,7 @@ public class ClientsController : ControllerBase
     }
 
     // GET api/v1/clients/1
-    [HttpGet("{id: int}", Name = "GetClientParId")]
+    [HttpGet("{id:int}", Name = "GetClientParId")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ClientResponseDto>> GetParId(int id)
@@ -62,22 +63,27 @@ public class ClientsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ClientResponseDto>> Creer([FromBody] ClientRequestDto dto)
+    public async Task<ActionResult<ApiResponse<ClientResponseDto>>> Creer([FromBody] ClientRequestDto dto)
     {
         try
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<string>
+                .Erreur("Données invalides."));
+
             var client = await _service.CreerAsync(dto);
         
-        return CreatedAtRoute("GetClientParId", new { id = client.Id }, client);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Erreur Creer Client");
-            return StatusCode(500, "Erreur interne du serveur.");
-        }
+        return CreatedAtRoute("GetClientParId",
+            new { id = client.Id },
+            ApiResponse<ClientResponseDto>.Ok(client, "Client créé avec succès !"));
     }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Erreur Creer Client");
+        return StatusCode(500, ApiResponse<string>
+            .Erreur("Erreur interne du serveur."));
+    }
+}
      // PUT api/v1/clients/1/recharger?montant=100
     [HttpPut("{id:int}/recharger")]
     [ProducesResponseType(StatusCodes.Status200OK)]
