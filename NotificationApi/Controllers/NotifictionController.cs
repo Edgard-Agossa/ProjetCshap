@@ -16,6 +16,13 @@ public class NotificationController : ControllerBase
 
     // Remplace cette URL par ton URL de Webhook Discord réelle
     private const string DiscordWebhookUrl = "https://cshap.free.beeceptor.com";
+    private const string DiscordWebhookUrl2 = "https://pipedream.com/@edgardagossa5/invite?token=a86f7d49f32ba27db0eda7808fa19025";
+    private readonly Dictionary<string, List<string>> _urlsDepartement = new(StringComparer.OrdinalIgnoreCase)
+    {
+      {"IT", new List<string> { "https://cshap.free.beeceptor.com", "https://cshap.free.beeceptor.com", "https://cshap.free.beeceptor.com" }},
+      {"RH", new List<string> { "https://cshap.free.beeceptor.com", "https://cshap.free.beeceptor.com" }},
+      {"ITS", new List<string> { "https://cshap.free.beeceptor.com" }}
+    };
 
     public NotificationController(HttpClient httpClient)
     {
@@ -90,7 +97,7 @@ public class NotificationController : ControllerBase
     }
 
     [HttpPost("alert")]
-   public async Task<IActionResult> Alert([FromBody] AlertRequest request)
+    public async Task<IActionResult> Alert([FromBody] AlertRequest request)
     {
         if (string.IsNullOrEmpty(request.Message))
         {
@@ -105,8 +112,8 @@ public class NotificationController : ControllerBase
         var json = JsonSerializer.Serialize(payload);
         var messageContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var urls = new List<string> {DiscordWebhookUrl, DiscordWebhookUrl};
-        
+        var urls = new List<string> { DiscordWebhookUrl, DiscordWebhookUrl };
+
         if (request.IsUrgent)
         {
             var tasks = urls.Select(url => _httpClient.PostAsync(url, messageContent));
@@ -119,4 +126,30 @@ public class NotificationController : ControllerBase
             return response.IsSuccessStatusCode ? Ok("Info envoyée") : StatusCode(500);
         }
     }
+
+    [HttpPost("message-departement")]
+    public async Task<IActionResult> MessageDepartemeent([FromBody] DepartmentMessage request)
+    {
+        if (string.IsNullOrEmpty(request.Content) || string.IsNullOrEmpty(request.DepartementName))
+        {
+            return BadRequest("Le contenu du message ou le Nom du Departement ne peut pas être vide.");
+        }
+
+        if (!_urlsDepartement.ContainsKey(request.DepartementName))
+        {
+           return NotFound($"Le département {request.DepartementName} n'existe pas.");
+        }
+
+        var payload = new { content = request.Content };
+        var json = JsonSerializer.Serialize(payload);
+        var messageContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+
+        var tasks = _urlsDepartement[request.DepartementName].Select(url => _httpClient.PostAsync(url, messageContent));
+
+        var responses = await Task.WhenAll(tasks);
+        if (responses.Any(r => !r.IsSuccessStatusCode)) return StatusCode(500, "Erreur lors de la diffusion");
+        return Ok("Message distribué au departement");
+    }
+
 }
