@@ -11,11 +11,11 @@ namespace NotificationApi.Controllers;
 [Route("api/[controller]")]
 public class NotificationController : ControllerBase
 {
-// HttpClient est l'outil qui permet à notre API de parler à une autre API
+    // HttpClient est l'outil qui permet à notre API de parler à une autre API
     private readonly HttpClient _httpClient;
-    
+
     // Remplace cette URL par ton URL de Webhook Discord réelle
-    private const string DiscordWebhookUrl = "https://webhook.site/00922766-58f4-48c6-91ee-74fd49ffe107";
+    private const string DiscordWebhookUrl = "https://cshap.free.beeceptor.com";
 
     public NotificationController(HttpClient httpClient)
     {
@@ -32,23 +32,24 @@ public class NotificationController : ControllerBase
         }
         //préparation du paquet pour discord
         //discord attend un json avec une propriété content
-        var payload = new {content = request.Content};
-            
+        var payload = new { content = request.Content };
+
         var jsonPayload = JsonSerializer.Serialize(payload);
-        
+
         var httpContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-  
+
         try
         {
             //envoi simultané via le webhook
             // cette ligne pousse le message sur le réseau choisi
             var response = await _httpClient.PostAsync(DiscordWebhookUrl, httpContent);
-            if(response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                return Ok(new {status = "Envoyé !", message = request.Content});
+                return Ok(new { status = "Envoyé !", message = request.Content });
             }
             return StatusCode((int)response.StatusCode, "Erreur lors de l'envoi sur Discord.");
-        }catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             return StatusCode(500, $"Erreur interne : {ex.Message}");
         }
@@ -60,7 +61,7 @@ public class NotificationController : ControllerBase
     {
         //On simule 3 destinations différentes 
         // (ici je mets 3 fois le même pour le test, mais imagine 3 amis différents)
-        var urls = new List<string> {            
+        var urls = new List<string> {
             DiscordWebhookUrl,
             DiscordWebhookUrl,
             DiscordWebhookUrl,
@@ -74,9 +75,9 @@ public class NotificationController : ControllerBase
         };
         //on crée une liste de tâches vides 
         var tasks = new List<Task<HttpResponseMessage>>();
-        foreach(var url in urls)
+        foreach (var url in urls)
         {
-            var json = JsonSerializer.Serialize(new {content = request.Content});
+            var json = JsonSerializer.Serialize(new { content = request.Content });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             //IMPORTANT: on ne met pas "await ici !
@@ -86,5 +87,36 @@ public class NotificationController : ControllerBase
         await Task.WhenAll(tasks);
         return Ok("Le message a été diffusé partout instantanément !");
 
+    }
+
+    [HttpPost("alert")]
+   public async Task<IActionResult> Alert([FromBody] AlertRequest request)
+    {
+        if (string.IsNullOrEmpty(request.Message))
+        {
+            return BadRequest("Le message ne peut pas être vide.");
+        }
+        string urgentOrInfo = request.IsUrgent ? "URGENT :" : "INFO :";
+
+        string finalMessage = urgentOrInfo + request.Message;
+
+        //préparation du contenu json(une seule fois !)
+        var payload = new { content = finalMessage };
+        var json = JsonSerializer.Serialize(payload);
+        var messageContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var urls = new List<string> {DiscordWebhookUrl, DiscordWebhookUrl};
+        
+        if (request.IsUrgent)
+        {
+            var tasks = urls.Select(url => _httpClient.PostAsync(url, messageContent));
+            await Task.WhenAll(tasks);
+            return Ok("Alertes urgentes difusées.");
+        }
+        else
+        {
+            var response = await _httpClient.PostAsync(DiscordWebhookUrl, messageContent);
+            return response.IsSuccessStatusCode ? Ok("Info envoyée") : StatusCode(500);
+        }
     }
 }
